@@ -1,0 +1,12 @@
+# vscode
+.vscode/*
+
+# marscode
+.marscode/*
+
+# python environments
+.venv/*
+.python-version
+
+# build
+build/*
