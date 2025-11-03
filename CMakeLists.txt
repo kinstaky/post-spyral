@@ -48,6 +48,17 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(toml11)
 
+# fetch cxxopts
+FetchContent_Declare(
+	cxxopts
+	GIT_REPOSITORY https://github.com/jarro2783/cxxopts.git
+	GIT_TAG v3.3.1
+	GIT_SHALLOW TRUE
+	GIT_SHALLOW_DEPTH 1
+)
+FetchContent_MakeAvailable(cxxopts)
+
+
 
 # Only do these if this is the main project, and not if it is included
 # through add_subdirectory

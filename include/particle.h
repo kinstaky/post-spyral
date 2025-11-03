@@ -125,6 +125,18 @@ public:
 	inline ROOT::Math::XYZVector MomentumVector() const { return momentum_ * direction_; }
 
 
+	/// @brief plus operator, get a new particle with added momentum, energy, charge and mass
+	/// @param other other particle
+	/// @return new particle with added momentum, energy, charge and mass
+	Particle operator+(const Particle &other) const;
+
+
+	/// @brief minus operator, get a new particle with subtracted momentum, energy, charge and mass
+	/// @param other other particle
+	/// @return new particle with subtracted momentum, energy, charge and mass
+	Particle operator-(const Particle &other) const;
+
+
 private:
 	// atomic number
 	int z_;
@@ -195,8 +207,6 @@ catima::Material SolidMaterial(
 
 
 using ParticleList = std::vector<Particle>;
-
-
 
 /// @brief simulate beam scatter on target
 /// @param[in] beam beam particle

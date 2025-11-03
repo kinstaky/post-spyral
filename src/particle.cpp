@@ -110,6 +110,43 @@ Particle& Particle::SetMomentum(double momentum) {
 }
 
 
+Particle Particle::operator+(const Particle &other) const {
+	Particle result(
+		z_ + other.z_,
+		a_ + other.a_
+	);
+	ROOT::Math::XYZVector momentum_vector =
+		MomentumVector() + other.MomentumVector();
+	result.direction_ = momentum_vector.Unit();
+	result.momentum_ = momentum_vector.R();
+	result.energy_ = Energy() + other.Energy();
+	double mass = sqrt(
+		pow(result.energy_, 2.0) - pow(result.momentum_, 2.0)
+	);
+	result.excitation_ = mass - result.mass_;
+	return result;
+}
+
+
+Particle Particle::operator-(const Particle &other) const {
+	Particle result(
+		z_ - other.z_,
+		a_ - other.a_
+	);
+	ROOT::Math::XYZVector momentum_vector =
+		MomentumVector() - other.MomentumVector();
+	result.direction_ = momentum_vector.Unit();
+	result.momentum_ = momentum_vector.R();
+	result.energy_ = Energy() - other.Energy();
+	double mass = sqrt(
+		pow(result.energy_, 2.0) - pow(result.momentum_, 2.0)
+	);
+	result.excitation_ = mass - result.mass_;
+	return result;
+}
+
+
+
 catima::Material SolidMaterial(
 	std::initializer_list<std::array<double,3>> compound,
 	double thickness
