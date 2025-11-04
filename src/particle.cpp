@@ -269,4 +269,82 @@ void Scatter(
 }
 
 
+void Breakup(
+	const Particle &parent,
+	double angle,
+	Particle &fragment0,
+	Particle &fragment1
+) {
+	// beta of center of mass
+	double beta_center = parent.Momentum() / parent.Energy();
+	// gamma of center of mass
+	double gamma_center = 1.0 / sqrt(1.0 - pow(beta_center, 2.0));
+	// total energy in center of mass frame
+	double parent_energy_center = parent.Mass();
+	// momentum of fragments in center of mass frame
+	double fragment_momentum =
+		sqrt(
+			(parent_energy_center - fragment0.Mass() - fragment1.Mass())
+			* (parent_energy_center - fragment0.Mass() + fragment1.Mass())
+			* (parent_energy_center + fragment0.Mass() - fragment1.Mass())
+			* (parent_energy_center + fragment0.Mass() + fragment1.Mass())
+		) / (2.0 * parent.Mass());
+
+	// fragment1 momentum parallel part in c.m. frame
+	double fragment0_momentum_center_parallel = fragment_momentum*cos(angle);
+	// fragment0 momentum vertical part in c.m. frame
+	double fragment0_momentum_center_vertical = fragment_momentum*sin(angle);
+	// fragment0 energy in c.m. frame
+	double fragment0_energy_center = sqrt(
+		pow(fragment_momentum, 2.0) + pow(fragment0.Mass(), 2.0)
+	);
+	// fragment0 energy in lab frame
+	double fragment0_energy = gamma_center * fragment0_energy_center
+		+ gamma_center * beta_center * fragment0_momentum_center_parallel;
+	// fragment0 momentum parallel part in lab frame
+	double fragment0_momentum_parallel =
+		gamma_center * fragment0_momentum_center_parallel
+		+ gamma_center * beta_center * fragment0_energy_center;
+	// fragment0 momentum vertical part in lab frame
+	double fragment0_momentum_vertical = fragment0_momentum_center_vertical;
+	// fragment0 angle in lab frame
+	double fragment0_angle =
+		fabs(atan(fragment0_momentum_vertical / fragment0_momentum_parallel));
+	fragment0_angle = fragment0_momentum_parallel > 0 ?
+		fragment0_angle : pi - fragment0_angle;
+	fragment0.SetKineticEnergy(fragment0_energy - fragment0.Mass());
+	fragment0.SetDirection(ROOT::Math::XYZVector(
+		sin(fragment0_angle), 0.0, cos(fragment0_angle)
+	));
+
+	// fragment2 momentum parallel part in c.m. frame
+	double fragment1_momentum_center_parallel = -fragment_momentum*cos(angle);
+	// fragment1 momentum vertical part in c.m. frame
+	double fragment1_momentum_center_vertical = -fragment_momentum*sin(angle);
+	// fragment1 energy in c.m. frame
+	double fragment1_energy_center = sqrt(
+		pow(fragment_momentum, 2.0) + pow(fragment1.Mass(), 2.0)
+	);
+	// fragment1 energy in lab frame
+	double fragment1_energy = gamma_center * fragment1_energy_center
+		+ gamma_center * beta_center * fragment1_momentum_center_parallel;
+	// fragment1 momentum parallel part in lab frame
+	double fragment1_momentum_parallel =
+		gamma_center * fragment1_momentum_center_parallel
+		+ gamma_center * beta_center * fragment1_energy_center;
+	// fragment1 momentum vertical part in lab frame
+	double fragment1_momentum_vertical = fragment1_momentum_center_vertical;
+	// fragment1 angle in lab frame
+	double fragment1_angle =
+		fabs(atan(fragment1_momentum_vertical / fragment1_momentum_parallel));
+	fragment1_angle = fragment1_momentum_parallel > 0 ?
+		fragment1_angle : pi - fragment1_angle;
+	fragment1.SetKineticEnergy(fragment1_energy - fragment1.Mass());
+	fragment1.SetDirection(ROOT::Math::XYZVector(
+		sin(fragment1_angle), 0.0, cos(fragment1_angle)
+	));
+	return;
+}
+
+
 };	//	namespace gong

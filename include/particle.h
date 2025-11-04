@@ -212,11 +212,25 @@ using ParticleList = std::vector<Particle>;
 /// @param[in] beam beam particle
 /// @param[in] target target particle
 /// @param[in] angle scattering angle of beam in radian in center of mass coordinate
-/// @param[inout] fragment0 scattered particle 0, with excitation energy set
-/// @param[inout] fragment1 scattered particle 1, with excitation energy set
+/// @param[inout] fragment0 scattered particle 0: input Ex; output momentum and energy
+/// @param[inout] fragment1 scattered particle 1: input Ex; output momentum and energy
 void Scatter(
 	const Particle &beam,
 	const Particle &target,
+	double angle,
+	Particle &fragment0,
+	Particle &fragment1
+);
+
+
+
+/// @brief simulate 1 particle breakup into two fragments
+/// @param[in] parent parent particle
+/// @param[in] angle scattering angle of beam in radian in center of mass coordinate
+/// @param[inout] fragment0 scattered particle 0: input mass, Ex; output momentum, energy
+/// @param[inout] fragment1 scattered particle 1: input mass, Ex; output momentum, energy
+void Breakup(
+	const Particle &parent,
 	double angle,
 	Particle &fragment0,
 	Particle &fragment1
