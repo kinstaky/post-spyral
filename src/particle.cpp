@@ -189,18 +189,13 @@ catima::Material GasMaterial(
 }
 
 
-ParticleList Scatter(
+void Scatter(
 	const Particle &beam,
 	const Particle &target,
 	double angle,
-	double beam_excitation,
-	double target_excitation
+	Particle &fragment0,
+	Particle &fragment1
 ) {
-	ParticleList result;
-	result.push_back(beam);
-	result[0].SetExcitationEnergy(beam_excitation);
-	result.push_back(target);
-	result[1].SetExcitationEnergy(target_excitation);
 	double beta_mass_center = beam.Momentum() / (beam.Energy() + target.Mass());
 	double gamma_mass_center =
 		1.0 / sqrt(1.0 - beta_mass_center * beta_mass_center);
@@ -211,10 +206,10 @@ ParticleList Scatter(
 	// momentum of exit particle or recoil particle in center of mass frame
 	double exit_momentum_center =
 		sqrt(
-			(reaction_energy - result[0].Mass() - result[1].Mass())
-			* (reaction_energy - result[0].Mass() + result[1].Mass())
-			* (reaction_energy + result[0].Mass() - result[1].Mass())
-			* (reaction_energy + result[0].Mass() + result[1].Mass())
+			(reaction_energy - fragment0.Mass() - fragment1.Mass())
+			* (reaction_energy - fragment0.Mass() + fragment1.Mass())
+			* (reaction_energy + fragment0.Mass() - fragment1.Mass())
+			* (reaction_energy + fragment0.Mass() + fragment1.Mass())
 		) / (2.0 * reaction_energy);
 	// exit momentum parallel and vertical part
 	double exit_momentum_center_parallel = exit_momentum_center * cos(angle);
@@ -222,7 +217,7 @@ ParticleList Scatter(
 	// exit energy in c.m.
 	double exit_energy_center = sqrt(
 		exit_momentum_center * exit_momentum_center
-		+ result[0].Mass() * result[0].Mass()
+		+ fragment0.Mass() * fragment0.Mass()
 	);
 	// exit energy in lab frame
 	double exit_energy = gamma_mass_center * exit_energy_center
@@ -236,8 +231,8 @@ ParticleList Scatter(
 	double exit_angle = fabs(atan(exit_momentum_vertical / exit_momentum_parallel));
 	exit_angle = exit_momentum_parallel > 0 ?
 		exit_angle : pi - exit_angle;
-	result[0].SetKineticEnergy(exit_energy - result[0].Mass());
-	result[0].SetDirection(ROOT::Math::XYZVector(
+	fragment0.SetKineticEnergy(exit_energy - fragment0.Mass());
+	fragment0.SetDirection(ROOT::Math::XYZVector(
 		sin(exit_angle), 0.0, cos(exit_angle)
 	));
 
@@ -249,7 +244,7 @@ ParticleList Scatter(
 	// recoil energy in c.m.
 	double recoil_energy_center = sqrt(
 		recoil_momentum_center * recoil_momentum_center
-		+ result[1].Mass() * result[1].Mass()
+		+ fragment1.Mass() * fragment1.Mass()
 	);
 	// recoil energy in lab frame
 	double recoil_energy = gamma_mass_center * recoil_energy_center
@@ -265,12 +260,12 @@ ParticleList Scatter(
 		fabs(atan(recoil_momentum_vertical / recoil_momentum_parallel));
 	recoil_angle = recoil_momentum_parallel > 0 ?
 		recoil_angle : pi - recoil_angle;
-	result[1].SetKineticEnergy(recoil_energy - result[1].Mass());
-	result[1].SetDirection(ROOT::Math::XYZVector(
+	fragment1.SetKineticEnergy(recoil_energy - fragment1.Mass());
+	fragment1.SetDirection(ROOT::Math::XYZVector(
 		sin(recoil_angle), 0.0, cos(recoil_angle)
 	));
 
-	return result;
+	return;
 }
 
 

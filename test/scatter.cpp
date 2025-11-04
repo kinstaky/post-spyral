@@ -140,15 +140,19 @@ int main(int, char **argv) {
 			angle_fin >> cm_angle >> beam_lab_angle >> target_lab_angle;
 			energy_fin >> tmp >> beam_energy >> target_energy;
 
-			ParticleList scattered = gong::Scatter(
+			gong::Particle fragment0(info.beam);
+			fragment0.SetExcitationEnergy(info.beam_excitation);
+			gong::Particle fragment1(info.target);
+			fragment1.SetExcitationEnergy(info.target_excitation);
+			gong::Scatter(
 				info.beam, info.target,
 				cm_angle / 180.0 * gong::pi,
-				info.beam_excitation, info.target_excitation
+				fragment0, fragment1
 			);
 			// check result
 			angle_pass &= Compare(
 				beam_lab_angle,
-				scattered[0].Direction().Theta() / gong::pi * 180.0,
+				fragment0.Polar() / gong::pi * 180.0,
 				info.angle_eps,
 				cm_angle,
 				index,
@@ -156,7 +160,7 @@ int main(int, char **argv) {
 			);
 			angle_pass &= Compare(
 				target_lab_angle,
-				scattered[1].Direction().Theta() / gong::pi * 180.0,
+				fragment1.Polar() / gong::pi * 180.0,
 				info.angle_eps,
 				cm_angle,
 				index,
@@ -164,7 +168,7 @@ int main(int, char **argv) {
 			);
 			energy_pass &= Compare(
 				beam_energy,
-				scattered[0].KineticEnergy() / scattered_beam_mass_in_u,
+				fragment0.KineticEnergy() / scattered_beam_mass_in_u,
 				info.energy_eps,
 				cm_angle,
 				index,
@@ -172,7 +176,7 @@ int main(int, char **argv) {
 			);
 			energy_pass &= Compare(
 				target_energy,
-				scattered[1].KineticEnergy() / scattered_target_mass_in_u,
+				fragment1.KineticEnergy() / scattered_target_mass_in_u,
 				info.energy_eps,
 				cm_angle,
 				index,
@@ -181,16 +185,16 @@ int main(int, char **argv) {
 
 #ifdef DEBUG
 			g_cangle_beam_langle[index].AddPoint(
-				cm_angle, scattered[0].Direction().Theta() * TMath::RadToDeg()
+				cm_angle, fragment0.Polar() * TMath::RadToDeg()
 			);
 			g_cangle_beam_energy[index].AddPoint(
-				cm_angle, scattered[0].KineticEnergy()
+				cm_angle, fragment0.KineticEnergy()
 			);
 			g_cangle_target_langle[index].AddPoint(
-				cm_angle, scattered[1].Direction().Theta() * TMath::RadToDeg()
+				cm_angle, fragment1.Polar() * TMath::RadToDeg()
 			);
 			g_cangle_target_energy[index].AddPoint(
-				cm_angle, scattered[1].KineticEnergy()
+				cm_angle, fragment1.KineticEnergy()
 			);
 #endif
 		}

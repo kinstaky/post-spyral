@@ -259,10 +259,11 @@ void SearchBeamEnergy(
 		for (int j = 0; j < angle_num; ++j) {
 			double theta = 0.1 + j * 0.1;
 			gong::Particle beam(6, 16, beam_energy);
-			gong::ParticleList scattered =
-				gong::Scatter(beam, target_particle, theta);
-			kinetic_energy_data[i][j] = scattered[1].KineticEnergy();
-			polar_data[i][j] = scattered[1].Polar() * TMath::RadToDeg();
+			gong::Particle scattered0(beam);
+			gong::Particle scattered1(target_particle);
+			gong::Scatter(beam, target_particle, theta, scattered0, scattered1);
+			kinetic_energy_data[i][j] = scattered1.KineticEnergy();
+			polar_data[i][j] = scattered1.Polar() * TMath::RadToDeg();
 		}
 		g_e_theta_generated.push_back(
 			TGraph(angle_num, polar_data[i].data(), kinetic_energy_data[i].data())

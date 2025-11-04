@@ -212,16 +212,14 @@ using ParticleList = std::vector<Particle>;
 /// @param[in] beam beam particle
 /// @param[in] target target particle
 /// @param[in] angle scattering angle of beam in radian in center of mass coordinate
-/// @param[in] beam_excitation beam excitation energy in MeV
-/// @param[in] target_excitation target excitation energy in MeV
-/// @returns list of scattered particles
-///		index 0: scattered beam, index 1: scattered target
-ParticleList Scatter(
+/// @param[inout] fragment0 scattered particle 0, with excitation energy set
+/// @param[inout] fragment1 scattered particle 1, with excitation energy set
+void Scatter(
 	const Particle &beam,
 	const Particle &target,
 	double angle,
-	double beam_excitation = 0.0,
-	double target_excitation = 0.0
+	Particle &fragment0,
+	Particle &fragment1
 );
 
 
